@@ -1,0 +1,141 @@
+# to build : rpm -ba eciadsl-usermode.spec
+# or       : rpm -ta eciadsl-usermode-0.10.tar.bz2
+# the tar.bz2 should contain a directory eciadsl-usermode-0.10
+
+Summary:   A beta-quality usermode driver for the ECI ADSL USB modem
+Name:      eciadsl-usermode
+Version:   0.12
+Release:   1
+URL:       http://eciadsl.flashtux.org/
+License:   GPL
+Group:     Networking/Other
+Packager:  David Faure <david@mandrakesoft.com>, Benoit PAPILLAULT <benoit.papillault@free.fr>, FlashCode <flashcode@flashtux.org>
+Source:    http://eciadsl.flashtux.org/download/%{name}-%{version}.tar.gz
+BuildRoot: %_tmppath/%name-%version-%release
+Requires:  ppp, tcl, tk
+Prefix:    /usr
+
+%description
+The eciadsl-usermode package contains the driver for the ADSL USB modem
+called ECI Hi-Focus. It also support a lot of USB ADSL modems based upon
+the Globespan chipset. It is not a kernel module, but a user-mode program
+that handles the modem. A kernel module is under development.
+
+%prep
+# in this section, we remove old builds, untar the new sources and
+# optionally make some patch. in our case, it only contains %setup
+# which untar the sources
+%setup -q
+
+%build
+./configure --prefix=/usr --sysconfdir=/etc
+
+make
+
+%install
+rm -rf "$RPM_BUILD_ROOT"   
+make DESTDIR=$RPM_BUILD_ROOT install
+
+%pre
+# pre-install script
+
+%post
+# post-install script
+echo "Now you need to configure the driver. Please read the README"
+echo "and INSTALL files located in /usr/share/doc/%name-%version"
+
+%preun
+# pre-uninstall script
+
+%postun
+# post-uninstall script
+
+%files
+# here, we list all the files that form the binary package.
+# executable files should be : rwxr-xr-x
+%defattr(755,root,root)
+/usr/bin/eciadsl-start
+/usr/bin/eciadsl-stop
+/usr/bin/eciadsl-restart
+/usr/bin/eciadsl-firmware
+/usr/bin/eciadsl-synch
+/usr/bin/eciadsl-pppoeci
+/usr/bin/eciadsl-doctor
+/usr/bin/eciadsl-check-hdlc
+/usr/bin/eciadsl-check-hdlc-bug
+/usr/bin/eciadsl-config-tk
+/usr/bin/eciadsl-config-text
+/usr/bin/eciadsl-remove-dabusb
+/usr/bin/eciadsl-probe-synch
+/usr/bin/eciadsl-probe-device
+/usr/bin/eciadsl-vendor-device.pl
+/usr/bin/eciadsl-data.pl
+/usr/bin/eciadsl-uc.pl
+/usr/bin/eciadsl-makeconfig
+/usr/bin/eciadsl-ctrlui
+/usr/bin/eciadsl-testconnection
+
+# compatibility links
+#/usr/bin/startmodem
+#/usr/bin/eci-load1
+#/usr/bin/eci-load2
+#/usr/bin/pppoeci
+
+# config files should be : rw-r--r--
+%defattr(644,root,root)
+%config /etc/eciadsl/modems.db
+%config /etc/eciadsl/providers.db
+%config /etc/eciadsl/firmware00.bin
+%config /etc/eciadsl/synch01.bin
+%config /etc/eciadsl/modemeci.gif
+
+# doc files should be : rw-r--r--
+%defattr(644,root,root)
+%doc README
+%doc README.es
+%doc README.fr
+%doc README.it
+%doc README.pt
+%doc INSTALL
+%doc INSTALL.es
+%doc INSTALL.fr
+%doc INSTALL.it
+%doc INSTALL.pt
+%doc TROUBLESHOOTING
+%doc TROUBLESHOOTING.es
+%doc TROUBLESHOOTING.fr
+%doc TROUBLESHOOTING.it
+%doc TROUBLESHOOTING.pt
+%doc BUGS
+%doc TODO
+%doc rc.adsl
+
+%clean
+# in this section, we clean up temporary files generated during the build
+	rm -rf %buildroot
+
+%changelog
+* Mon Aug 13 2007 Sebastien HELLEU <flashcode@flashtux.org> 0.12-1
+- Updated to the 0.12 release
+* Sat Sep 24 2005 Sebastien HELLEU <flashcode@flashtux.org> 0.11-1
+- Updated to the 0.11 release
+* Tue Nov 02 2004 Benoit PAPILLAULT <benoit.papillault@free.fr> 0.10-1
+- Updated to the 0.10 release
+* Sat Apr 03 2004 Benoit PAPILLAULT <benoit.papillault@free.fr> 0.9-1
+- Updated to the 0.9 release
+* Tue Jul 01 2003 Benoit PAPILLAULT <benoit.papillault@free.fr> 0.8-1
+- Corrected a bug in reporting errors from the USB layer
+* Wed Jan 22 2003 wwp <subscript@free.fr> 0.7-1
+- last (?) fixes to 0.7.
+* Tue Jan 21 2003 wwp <subscript@free.fr> 0.7-1
+- made 0.7-ready.
+* Tue Jan 21 2003 Benoit PAPILLAULT <benoit.papillault@free.fr> 0.6-2
+- Allow non-root users to generate .rpm (removed the use of system rpm topdir).
+* Sun Jan 05 2003 wwp <subscript@free.fr> 0.6-2
+- Re-introduced ROOT for make invocation (fixes wrong relocation dir).
+* Sat Jan 04 2003 wwp <subscript@free.fr> 0.6-1
+- Updated for 0.6.
+* Mon Apr 29 2002 Benoit PAPILLAULT <benoit.papillault@free.fr> 0.5-2
+- Make a new spec file for 0.5. This spec file is in the CVS.
+* Mon Dec 17 2001 David Faure <david@mandrakesoft.com> 0.2-1select.mdk
+- Initial spec, from CVS sources (usermode and doc modules)

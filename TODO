@@ -1,0 +1,81 @@
+EciAdsl - Driver for USB ADSL modems with Globespan chipset
+===========================================================
+
+TOTO list - updated on 2005-09-24 by FlashCode <flashcode@flashtux.org>
+
+Sorted according to priority (the upper in the list, the prior):
+
+* done
++ currently in development
+- pending
+? is this really necessary?
+
+
+v 0.12:
+
+  - automatically restart driver (or synch too) on modem hangup (via ctrlui??)
+  - profile pppoeci. it uses really too much cpu. (static and inline is a good way to start)
+  - improve synch .bin detection (eciadsl-probe-synch script)
+  - detect if 2.6 USB patch is needed or not
+  - eciadsl-pppoeci, eciadsl-firmware and eciadsl-synch must rehook TERM
+    (if possible) and STOP signal to cleanup thing and exit
+  - code clean up & normalization, string protection in scripts
+  - submit driver to GNU/Linux distro managers
+  - better distro/services(init.d?) integration
+  ? use standard ./configure script (autoconf/make tools)
+  ? URB cleaning on decnx (prevents kernel oops)
+  ? fix: multiple physical HUBs, select USB device may fail (benoit's lib or usbfs?)
+  ? remove use of IFS in eciadsl-probe-device
+  ? check that /proc/bus/usb/devices is not harcoded (Suse 9.1 case)
+  ? all VIDs/PIDs should be in hexa : 0x0547 (not 0547).
+
+Future versions:
+
+  - submit driver to *BSD distro managers
+  ? new USB implementation (benoit)
+  - change configuration file /etc/eciadsl/eciadsl.conf to a shell parsable
+  with VAR="value" and comments only
+
+v 0.6:
+
+  * merging of pending patches (LCP timeouts, LLC/LLC_SNAP, eci-load* timeout detection, oliverthered*)
+  * fix: problems with USB 2.0 HUBs (ehci-hcd)
+  * synch_bin in repository
+  * ANSIC89 compliance
+  * eciconftxt.sh
+  * probe_device.sh
+  * synch bin auto selection (config time only)
+  * packaging:
+    * ./configure and .sk, changes to config files (get them from cnx, inc. startmodem?) and
+      modify scripts
+    * fix makeconfig: adsl file seems to be empty sometimes (bug)
+    * fix ETC_DIR use (separate installation and syst configuration uses)
+    * updates tcl and sh scripts to get configured by ./configure or to use a eciadsl/conf file
+    * some more checks in ./configure (see TODO inside, check for GNU install, sed and grep and
+      other util stuff..)
+    * --with-kernel-sources=<PATH> in ./configure -> pusb-linux.c's linux/* includes
+  * unify websites: eciadsl.sf.net update/move to flashtux
+  * redesign eciconf.sh UI
+  * see if selected modem/provider/synchbin can be still coloured when an item from another
+    listbox is selected.
+  * add grep -m check to ./configure, else use egrep (fixed temporarily).
+  * redesign probe_synch.sh to reset the modem between each synch .bin test
+  * update the spec file
+  * use section numbers in TROUBLESHOOTING files
+  * fix TROUBLESHOOTING file regarding the USB2 warns.
+  * fix EICON problems with 0.6-preX
+  * add doc about connecting using startmodem at boot
+  * removed: skeleton is in adsl and makeconfig. moreover, make install performs stuff on the installed
+    adsl file, is this relevant in Makefile?
+  * keep previous settings when installing/configuring (eciconf.sh)
+  * keep previous settings when installing/configuring (eciconftxt.sh)
+  * merge oliverthered's pending patches (stability, gs7070), update doc if necessary
+  * merge flynux's pending extra-AAL5-encaps patch, -mode selection (protocol) using eciconf*, update doc
+  * remove synch and firm link, all scripts and exec must use eciadsl.conf (startmodem for instance)
+  * eciload* and pppoeci should read the .conf file by default (see pending patch or merge wwp's previous implementation)
+  * fix a hole in makeconfig: updated a pre-existing eciadsl.conf does not re-add missing fields
+  * complete translations, create README files, replace "jump previs/next question" w/ "see x.y" in the TROUBLESHOOTING files
+  * add better documentation in the TROUBLESHOOTING/INSTALL files about DHCP/static IP and the PPP mode.
+  * get back password from previous config
+  * get back DNS IPs from current config if Other is set (and even if Other is not set)
+  * get back USE_STATICIP from current config

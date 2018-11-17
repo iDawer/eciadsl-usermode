@@ -29,7 +29,7 @@
 #include <string.h>
 
 #include "pusb-linux.h"
-#include <asm/page.h>
+#include <sys/user.h>
 
 #include "pusb.h"
 

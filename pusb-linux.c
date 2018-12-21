@@ -28,7 +28,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include "pusb-linux.h"
+#include <linux/usb/ch9.h>
+#include <linux/usbdevice_fs.h>
 #include <sys/user.h>
 
 #include "pusb.h"
@@ -104,7 +105,11 @@ int init_pusb(){
 	if (!urb || !purb_sub_read || !purb_sub_write || !purb_sub_int_read || !purb_sub_iso_read || !purb_rw )
 		return -1;
 
+#ifdef USBDEVFS_URB_QUEUE_BULK
 	urbFlag=is_kernel_2_5() ? 0 : USBDEVFS_URB_QUEUE_BULK;
+#else
+	urbFlag = 0;
+#endif
  	urbType=is_kernel_2_5() ? USBDEVFS_URB_TYPE_INTERRUPT : USBDEVFS_URB_TYPE_BULK; 
 
 	memset(purb_rw, 0, sizeof(struct usbdevfs_urb));
@@ -217,13 +222,15 @@ int usbfs_search(const char* path, int vendorID, int productID)
 				break;
 		}
 		
-		if (S_ISREG(statbuf.st_mode))
+		if (S_ISREG(statbuf.st_mode) || S_ISCHR(statbuf.st_mode))
 		{
 			/* check the file size, which must be 18 
 			   = sizeof(struct usb_device_descriptor) */
 
+			/* We cannot check the file size in /dev/bus/usb without root.
 			if (statbuf.st_size < (int)sizeof(struct usb_device_descriptor))
 				continue;
+			*/
 			
 			if ((result=test_file(file, vendorID, productID)) < 0)
 				continue;
@@ -254,6 +261,11 @@ static inline pusb_device_t make_device(int fd)
 pusb_device_t pusb_search_open(int vendorID, int productID)
 {
 	int fd;
+
+	fd = usbfs_search("/dev/bus/usb", vendorID, productID);
+	if (fd >= 0) {
+		return(make_device(fd));
+	}
 
 	fd = usbfs_search("/proc/bus/usb", vendorID, productID);
 	if (fd < 0)

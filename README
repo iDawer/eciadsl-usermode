@@ -1,3 +1,5 @@
+Forked from http://eciadsl.flashtux.org
+
 INTRODUCTION
 ============
 
@@ -6,17 +8,21 @@ The driver is known to work in many countries, for different kinds of ADSL
 USB modems, using different kinds of PPP encapsulation layers modes (see the
 supported modems list at http://eciadsl.flashtux.org/modems.php).
 
+NOTE: Doc files have quite a lot of outdated information.
+
 
 PRE-REQUISITES
 ==============
 
-- a running GNU/Linux system (x86 architecture) with standard tools
+- a running GNU/Linux system (x86 or [NEW]x86_64 architecture) with standard tools
   (MDK9/RH8/top-recent/exotic ones may have (solvable) problems, BSD
   and other systems are not officially supported yet)
 - USB 1.1 hardware support
 - Linux kernel 2.4.x (>=2.4.18-pre3 or <2.4.18-pre3+N_HDLC patch in
   order to get automatic pppd reconnection feature working, which is
-  recommanded) or 2.6.x (recommended: >= 2.6.9)
+  recommanded) or 2.6.x (recommended: >= 2.6.9).
+  This fork uses linux' usb headers so it should work on even newer
+  kernels (at least 4.19.x).
 	- USB support (as modules):
 		- general USB support
 		- USB preliminary fs

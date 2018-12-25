@@ -90,7 +90,7 @@ function check_host_is_EHCI()
     TMPVER=""
     OLDIFS="$IFS"
     IFS=$'\n'
-    for LINE in $(cat /proc/bus/usb/devices)
+    for LINE in $(usb-devices)
     do
         IFS="$OLDIFS"
         case "${LINE:0:2}" in
@@ -246,28 +246,28 @@ fi
 
 next_step "Setting up USB support"
 
-if [ ! -d /proc/bus/usb ]; then
-    modprobe usbcore > /dev/null
-    sleep 1
-fi
+#if [ ! -d /proc/bus/usb ]; then
+#    modprobe usbcore > /dev/null
+#    sleep 1
+#fi
 
 # ===== Mount usbdevfs if needed ======
 
-if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
-    echo "Preliminary USB device filesystem is missing... trying to mount" ;
-    mount -t usbdevfs usbdevfs /proc/bus/usb >/dev/null 2>&1
-    if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
-        mount -t usbfs usbfs /proc/bus/usb >/dev/null 2>&1
-        if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
-            echo "Preliminary USB device filesystem: failed to load" ;
-            fatal ;
-        fi
-    else
-        echo "Preliminary USB device filesystem is now OK" ;
-    fi
-else
-    echo "Preliminary USB device filesystem is OK" ;
-fi
+#if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
+#    echo "Preliminary USB device filesystem is missing... trying to mount" ;
+#    mount -t usbdevfs usbdevfs /proc/bus/usb >/dev/null 2>&1
+#    if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
+#        mount -t usbfs usbfs /proc/bus/usb >/dev/null 2>&1
+#        if ! awk '{print $3}' /proc/mounts | egrep -q "usbfs|usbdevfs"; then
+#            echo "Preliminary USB device filesystem: failed to load" ;
+#            fatal ;
+#        fi
+#    else
+#        echo "Preliminary USB device filesystem is now OK" ;
+#    fi
+#else
+#    echo "Preliminary USB device filesystem is OK" ;
+#fi
 
 # ===== Check if dabusb is loaded =====
 
@@ -484,7 +484,7 @@ next_step "Uploading firmware"
 
 # check for the EZ-USB chips. If it's not there, maybe the firmware is
 # already loaded ... so continue.
-grep "^P:  Vendor=$vid1 ProdID=$pid1" /proc/bus/usb/devices > /dev/null
+lsusb -d $vid1:$pid1 > /dev/null
 if [ $? -eq 0 ]; then
     "$BIN_DIR/eciadsl-firmware" $firmware_options
     if [ $? -ne 0 ]; then
@@ -493,7 +493,7 @@ if [ $? -eq 0 ]; then
     fi
     echo "firmware loaded successfully"
 else
-    grep "^P:  Vendor=$vid2 ProdID=$pid2" /proc/bus/usb/devices > /dev/null
+    lsusb -d $vid2:$pid2 > /dev/null
     if [ $? -eq 0 ]; then
         echo "Warning: firmware seems to be already loaded"
         echo "Check that your modem is OFF before running $BASE (if modem is"

@@ -337,7 +337,7 @@ if [ -z "$preferred_usb_hub" ]; then
             echo -ne "Loading UHCI support... "
             if [ $minor_v -eq 4 ]; then
                 # 2.4 kernel
-                modprobe -l | grep usb-uhci > /dev/null
+                modinfo usb-uhci > /dev/null
                 if [ $? -ne 0 ]; then
                     echo "Warning: usb-uhci module doesn't exist"
                 else
@@ -352,7 +352,7 @@ if [ -z "$preferred_usb_hub" ]; then
                 fi
             elif [ $minor_v -ge 5 ]; then
                 # >= 2.5/2.6 kernel
-                modprobe -l | grep uhci-hcd > /dev/null
+                modinfo uhci-hcd > /dev/null
                 if [ $? -ne 0 ]; then
                     echo "Warning: uhci-hcd module doesn't exist"
                 else
@@ -379,7 +379,7 @@ if [ -z "$preferred_usb_hub" ]; then
         if [ $? -ne 0 ]; then
             echo -ne "Loading OHCI support... "
             if [ $minor_v -eq 4 ]; then
-                modprobe -l | grep usb-ohci > /dev/null
+                modinfo usb-ohci > /dev/null
                 if [ $? -ne 0 ]; then
                     echo "Warning: usb-ohci module doesn't exist"
                 else
@@ -393,7 +393,7 @@ if [ -z "$preferred_usb_hub" ]; then
                     fi
                 fi
             elif [ $minor_v -ge 5 ]; then
-                modprobe -l | grep ohci-hcd > /dev/null
+                modinfo ohci-hcd > /dev/null
                 if [ $? -ne 0 ]; then
                     echo "Warning: ohci-hcd module doesn't exist"
                 else
@@ -411,7 +411,7 @@ if [ -z "$preferred_usb_hub" ]; then
     fi
 else
     echo -ne "Loading USB HUB support ($preferred_usb_hub)... "
-    modprobe -l | grep $preferred_usb_hub > /dev/null
+    modinfo $preferred_usb_hub > /dev/null
     if [ $? -ne 0 ]; then
         echo "Warning: $preferred_usb_hub module doesn't exist"
     else
@@ -433,7 +433,8 @@ case "$mode" in
 
     # loading TUN/TAP support if needed
     
-    if ! modprobe -l | grep -q '/tun\.'; then
+    modinfo tun > /dev/null
+    if [ $? -ne 0 ]; then
         echo "Warning: tun/tap module does not exist"
     else
         if ! lsmod | grep -q '^tun '; then
@@ -461,7 +462,7 @@ esac
 if [ $? -ne 0 ]; then
     lsmod | grep n_hdlc > /dev/null
     if [ $? -ne 0 ]; then
-        modprobe -l | grep n_hdlc > /dev/null
+        modinfo n_hdlc > /dev/null
         if [ $? -ne 0 ]; then
             echo -e "Warning: n_hdlc support not found in kernel config"
         else
